@@ -3,7 +3,8 @@
 #include <math.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <Adafruit_BMP280.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BMP5xx.h>
 
 #define SCREEN_WIDTH 128  // OLED display width, in pixels
 #define SCREEN_HEIGHT 32  // OLED display height, in pixels
@@ -17,15 +18,15 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define BMP_MOSI 11
 #define BMP_CS 10
 
-Adafruit_BMP280 bmp;  // I2C
+Adafruit_BMP5xx bmp;  // I2C
 
 // Variables
-unsigned long lastAltReadTime = 0.0;
 unsigned long lastDisplayTime = 0.0;
+unsigned long lastReadAltTime = 0.0;
 
-float referencePressure = 1013.25;  // Pa
-long readAltInterval = 50;          // ms
+float referencePressure = 1013.25;  // Pa         // ms
 long displayAltInterval = 1000;     // ms
+long readAltInterval = 50; // ms
 
 float initialAlt = 0.0;
 ;
@@ -46,10 +47,9 @@ void setup() {
   }
 
   // Initialize BMP280
-  if (!bmp.begin()) {
-    Serial.println(F("Failed to initialize BMP280"));
-    while (1)
-      ;
+  if (!bmp.begin(BMP5XX_ALTERNATIVE_ADDRESS, &Wire)) {
+    Serial.println(F("Failed to initialize BMP580"));
+    while (1);
   }
 
   display.clearDisplay();
@@ -62,30 +62,30 @@ void setup() {
   display.print(F("Waiting for device to be ready ..."));
   display.display();
 
-  bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,  // Collects data intermittently
-                  Adafruit_BMP280::SAMPLING_X1,  // Temp. oversampling
-                  Adafruit_BMP280::SAMPLING_X8,  // Pressure oversampling
-                  Adafruit_BMP280::FILTER_X8,    // Iterations used for filtering
-                  Adafruit_BMP280::STANDBY_MS_1  // Microseconds of standby
-  );
+  bmp.setPowerMode(BMP5XX_POWERMODE_NORMAL);
+  bmp.setTemperatureOversampling(BMP5XX_OVERSAMPLING_2X);
+  bmp.setPressureOversampling(BMP5XX_OVERSAMPLING_16X);
+  bmp.setIIRFilterCoeff(BMP5XX_IIR_FILTER_COEFF_31);
+
 
   // Initialize variables
   delay(5000);  // Wait 5 seconds to read initial altitude
   initialAlt = bmp.readAltitude(referencePressure);
-  maxAlt = initialAlt;
-  lastAltReadTime = millis();
-  lastDisplayTime = lastAltReadTime;
+  maxAlt = 0;
+  lastDisplayTime = millis();
+  lastReadAltTime = lastDisplayTime;
+  Serial.println("Initial alt: " + String(initialAlt));
 }
 
 void loop() {
   unsigned long currentTime = millis();
   // Check altitude every read alt interval
-  if (currentTime - lastAltReadTime >= readAltInterval) {
+  if (currentTime - lastReadAltTime >= readAltInterval) {
     currentAlt = bmp.readAltitude(referencePressure) - initialAlt;
     if (currentAlt > maxAlt) {
       maxAlt = currentAlt;
     }
-    lastAltReadTime += readAltInterval;
+    lastDisplayTime += readAltInterval;
   }
   // Display max altitude once per displayAltInterval
   if (currentTime - lastDisplayTime >= displayAltInterval) {
