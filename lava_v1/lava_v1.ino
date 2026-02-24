@@ -59,8 +59,10 @@ void setup() {
   display.cp437(true);  // Use full 256 char font
 
   display.setCursor(0, 8);
+  display.setTextSize(1);
   display.print(F("Waiting for device to be ready ..."));
   display.display();
+  display.setTextSize(2);
 
   bmp.setPowerMode(BMP5XX_POWERMODE_NORMAL);
   bmp.setTemperatureOversampling(BMP5XX_OVERSAMPLING_2X);
