@@ -17,7 +17,6 @@ void setup() {
   storage.init();
   if(!storage.load()) while(1);
   storage.incrementLaunchNumber();
-  if(!storage.store()) while(1);
 
   // Setup logger
   char logName[16];
@@ -26,9 +25,11 @@ void setup() {
 
   // Set altimeter
   if(!altimeter.init()) while(1);
-  
-  // Increment launch numger and store to EEPROM
-  
+  storage.setInitAltitude(altimeter.getInititialAltitude());
+
+  // Store initial values to EEPROM
+  if(!storage.store()) while(1);
+
   delay(10);
   Serial.println(F("Finished initializing flight logger"));
 }

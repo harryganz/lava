@@ -12,6 +12,7 @@ class Altimeter {
   private:
     Adafruit_BMP5xx bmp;
     bool isInitialized = false;
+    float initialAltitude = -999;
 
     bool isInit() {
       if (!isInitialized) {
@@ -45,18 +46,29 @@ class Altimeter {
       bmp.setPowerMode(BMP5XX_POWERMODE_NORMAL);
       bmp.enablePressure(true);
 
+      delay(100);
+      initialAltitude = bmp.readAltitude(SEA_LEVEL_PRESSURE_HPA);
+
       isInitialized = true;
       Serial.println(F("Altimieter is initialized"));
 
       return true;
     }
 
+    // returns the initial altitude
+    // If not initialized, returns invalid float value (-999)
+    float getInititialAltitude() {
+      if (!isInit()) return -999.f;
+
+      return initialAltitude;
+    }
+
     // returns the current altitude
     // if not initialized will return an invalid float value (-999)
     float getAltitude() {
-      if (!isInit()) return -999;
+      if (!isInit()) return -999.f;
 
-      return bmp.readAltitude(SEA_LEVEL_PRESSURE_HPA);
+      return bmp.readAltitude(SEA_LEVEL_PRESSURE_HPA) - initialAltitude;
     }
 
 };

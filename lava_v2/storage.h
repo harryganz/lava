@@ -6,6 +6,7 @@ class Storage {
   private:
     bool isInitialized = false;
     uint8_t launchNumber = 0;
+    float initialAltitude = -999.f;
     
     bool isInit() {
       if (!isInitialized) {
@@ -21,7 +22,6 @@ class Storage {
       Serial.println(F("Initializing EEPROM..."));
       if (EEPROM.read(INIT_ADDR) != INIT_VAL) {
         EEPROM.write(INIT_ADDR, INIT_VAL);
-        EEPROM.write(LAUNCH_NUM_ADDR, 0);
       }
 
       isInitialized = true;
@@ -33,6 +33,7 @@ class Storage {
       Serial.println(F("Loading data from EEPROM"));
       if(isInit()) {
         EEPROM.get(LAUNCH_NUM_ADDR, launchNumber);
+        EEPROM.get(INIT_ALT_ADDR, initialAltitude);
         Serial.println(F("Data loaded from EEPROM"));
         return true;
       }
@@ -45,6 +46,7 @@ class Storage {
       Serial.println(F("Storing data to EEPROM"));
       if (isInit()) {
         EEPROM.update(LAUNCH_NUM_ADDR, launchNumber);
+        EEPROM.update(INIT_ALT_ADDR, initialAltitude);
         Serial.println(F("Data stored to EEPROM"));
         return true;
       }
@@ -58,5 +60,13 @@ class Storage {
 
     uint8_t incrementLaunchNumber() {
       return launchNumber++;
+    }
+
+    float getInitAlttidue() {
+      return initialAltitude;
+    }
+
+    float setInitAltitude(float alt) {
+      initialAltitude = alt;
     }
 };
