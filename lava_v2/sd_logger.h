@@ -9,9 +9,9 @@ class SDLogger {
     bool isInitialized = false;
     char* logFileName;
 
-    bool checkInitialized() {
-      if (!isInitialized) {
-        Serial.println("SD card was not initialized");
+    bool isInit() {
+      if(!isInitialized) {
+        Serial.println("SD Card is not initialized");
         return false;
       }
       return true;
@@ -39,7 +39,7 @@ class SDLogger {
       logFile.close();
 
       isInitialized = true;
-      logFileName = fileName;
+      strncpy(logFileName, fileName, sizeof(fileName));
 
       return true;
     }
@@ -47,7 +47,7 @@ class SDLogger {
 
     // Writes a single line of data to the log file
     bool writeLineToSD(const String data) {
-      if (!checkInitialized()) return false;
+      if (!isInit()) return false;
 
       File logFile = SD.open(logFileName, FILE_WRITE);
       

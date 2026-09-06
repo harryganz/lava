@@ -7,9 +7,12 @@ class Storage {
     bool isInitialized = false;
     uint8_t launchNumber = 0;
     
-    bool checkInit() {
-      if (isInitialized) return true;
-      return false;
+    bool isInit() {
+      if (!isInitialized) {
+        Serial.println("EEPROM is not initialized");
+        return false;
+      }
+      return true;
     }
   
   public:
@@ -18,7 +21,7 @@ class Storage {
       Serial.println("Initializing EEPROM...");
       if (EEPROM.read(INIT_ADDR) != INIT_VAL) {
         EEPROM.write(INIT_ADDR, INIT_VAL);
-        EEPROM.write(LAUNCH_NUM_ADDR, 1);
+        EEPROM.write(LAUNCH_NUM_ADDR, 0);
       }
 
       isInitialized = true;
@@ -28,7 +31,7 @@ class Storage {
     // the object
     bool load() {
       Serial.println("Loading data from EEPROM");
-      if(checkInit()) {
+      if(isInit()) {
         EEPROM.get(LAUNCH_NUM_ADDR, launchNumber);
         Serial.println("Data loaded from EEPROM");
         return true;
@@ -40,7 +43,7 @@ class Storage {
     // Stores data into the EEPROM
     bool store() {
       Serial.println("Storing data to EEPROM");
-      if (checkInit()) {
+      if (isInit()) {
         EEPROM.update(LAUNCH_NUM_ADDR, launchNumber);
         Serial.println("Data stored to EEPROM");
         return true;
@@ -54,6 +57,6 @@ class Storage {
     }
 
     uint8_t incrementLaunchNumber() {
-      launchNumber++;
+      return launchNumber++;
     }
 };
