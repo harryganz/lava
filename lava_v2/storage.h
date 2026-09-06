@@ -9,7 +9,7 @@ class Storage {
     
     bool isInit() {
       if (!isInitialized) {
-        Serial.println("EEPROM is not initialized");
+        Serial.println(F("EEPROM is not initialized"));
         return false;
       }
       return true;
@@ -18,37 +18,37 @@ class Storage {
   public:
     // Initializes the EEPROM, if needed
     void init() {
-      Serial.println("Initializing EEPROM...");
+      Serial.println(F("Initializing EEPROM..."));
       if (EEPROM.read(INIT_ADDR) != INIT_VAL) {
         EEPROM.write(INIT_ADDR, INIT_VAL);
         EEPROM.write(LAUNCH_NUM_ADDR, 0);
       }
 
       isInitialized = true;
-      Serial.println("EEPROM initialized");
+      Serial.println(F("EEPROM initialized"));
     }
     // Loads the data from the EEPROM to
     // the object
     bool load() {
-      Serial.println("Loading data from EEPROM");
+      Serial.println(F("Loading data from EEPROM"));
       if(isInit()) {
         EEPROM.get(LAUNCH_NUM_ADDR, launchNumber);
-        Serial.println("Data loaded from EEPROM");
+        Serial.println(F("Data loaded from EEPROM"));
         return true;
       }
-      Serial.println("Cannot load data if EEPROM is not initialized");
+      Serial.println(F("Cannot load data if EEPROM is not initialized"));
       return false;
     }
 
     // Stores data into the EEPROM
     bool store() {
-      Serial.println("Storing data to EEPROM");
+      Serial.println(F("Storing data to EEPROM"));
       if (isInit()) {
         EEPROM.update(LAUNCH_NUM_ADDR, launchNumber);
-        Serial.println("Data stored to EEPROM");
+        Serial.println(F("Data stored to EEPROM"));
         return true;
       }
-      Serial.println("Cannot store data if EEPROM is not initialized");
+      Serial.println(F("Cannot store data if EEPROM is not initialized"));
       return false;
     }
 

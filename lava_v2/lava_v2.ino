@@ -8,7 +8,7 @@ SDLogger logger = SDLogger();
 Altimeter altimeter = Altimeter();
 
 void setup() {
-  Serial.println("Initializing flight logger...");
+  Serial.println(F("Initializing flight logger..."));
 
   // Initialize Serial
   Serial.begin(9600);
@@ -30,7 +30,7 @@ void setup() {
   // Increment launch numger and store to EEPROM
   
   delay(10);
-  Serial.println("Finished initializing flight logger");
+  Serial.println(F("Finished initializing flight logger"));
 }
 
 unsigned long t = 0;

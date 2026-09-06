@@ -7,11 +7,11 @@
 class SDLogger {
   private:
     bool isInitialized = false;
-    char* logFileName;
+    char logFileName[16];
 
     bool isInit() {
       if(!isInitialized) {
-        Serial.println("SD Card is not initialized");
+        Serial.println(F("SD Card is not initialized"));
         return false;
       }
       return true;
@@ -24,45 +24,46 @@ class SDLogger {
       if (isInitialized) return true;
 
       if (!SD.begin(SD_CS_PIN)) {
-        Serial.println("Could not initialize SD card");
+        Serial.println(F("Could not initialize SD card"));
         return false;
       }
 
       File logFile = SD.open(fileName, FILE_WRITE);
       
       if (!logFile) {
-        Serial.println("Could not open file:");
+        Serial.println(F("Could not open file:"));
         Serial.println(fileName);
         return false;
       }
 
       logFile.close();
 
-      isInitialized = true;
-      strncpy(logFileName, fileName, sizeof(fileName));
+      strncpy(logFileName, fileName, sizeof(logFileName) - 1);
+      logFileName[sizeof(logFileName) - 1] = '\0'; 
 
+      isInitialized = true;
       return true;
     }
 
 
     // Writes a single line of data to the log file
-    bool writeLineToSD(const String data) {
+    bool writeLineToSD(const char* data) {
       if (!isInit()) return false;
 
       File logFile = SD.open(logFileName, FILE_WRITE);
       
       if (!logFile) {
-        Serial.println("Failed to write to file");
+        Serial.println(F("Failed to write to file"));
         Serial.println(logFileName);
         return false;
       }
 
-      size_t len = data.length(); // Add two for newline and carriage return
+      size_t len = strlen(data); // Add two for newline and carriage return
       size_t written = logFile.print(data);
       logFile.println();
 
       if (len != written) {
-        Serial.println("Incomplete write to SD");
+        Serial.println(F("Incomplete write to SD"));
         logFile.close();
         return false;
       }

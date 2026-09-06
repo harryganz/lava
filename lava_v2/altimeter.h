@@ -15,7 +15,7 @@ class Altimeter {
 
     bool isInit() {
       if (!isInitialized) {
-        Serial.println("Altimeter is not initialized");
+        Serial.println(F("Altimeter is not initialized"));
         return false;
       }
       return true;
@@ -24,12 +24,12 @@ class Altimeter {
     bool init() {
       if (isInitialized) return true;
       
-      Serial.println("Initializing altimeter...");
+      Serial.println(F("Initializing altimeter..."));
 
       // Initialize SPI/BMP
       Wire.begin();
       if (!bmp.begin(BMP5XX_ALTERNATIVE_ADDRESS, &Wire)) {
-        Serial.println("Could not find BMP5xx");
+        Serial.println(F("Could not find BMP5xx"));
         return false;
       }
 
@@ -46,7 +46,7 @@ class Altimeter {
       bmp.enablePressure(true);
 
       isInitialized = true;
-      Serial.println("Altimieter is initialized");
+      Serial.println(F("Altimieter is initialized"));
 
       return true;
     }
